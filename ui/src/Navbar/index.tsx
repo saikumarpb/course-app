@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" style={{ backgroundColor: 'white' }}>
-        <Toolbar className='flex justify-between'>
+        <Toolbar className="flex justify-between">
           <div>
             <IconButton
               size="large"
@@ -34,8 +34,12 @@ export default function Navbar() {
                 inputProps={{ 'aria-label': 'search' }}
               />
             </Search>
-            <Button variant="contained">Signup</Button>
-            <Button variant="contained">Login</Button>
+            <Button variant="contained" style={{ textTransform: 'none' }}>
+              Signup
+            </Button>
+            <Button variant="contained" style={{ textTransform: 'none' }}>
+              Login
+            </Button>
           </div>
         </Toolbar>
       </AppBar>
