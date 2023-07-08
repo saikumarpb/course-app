@@ -6,8 +6,11 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import { Search, SearchIconWrapper, StyledInputBase } from './styled';
 import { Code } from '@mui/icons-material';
+import { useState } from 'react';
+import Signup from '../Signup';
 
 export default function Navbar() {
+  const [showSignup, setShowSignup] = useState(false);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" style={{ backgroundColor: 'white' }}>
@@ -34,13 +37,18 @@ export default function Navbar() {
                 inputProps={{ 'aria-label': 'search' }}
               />
             </Search>
-            <Button variant="contained" style={{ textTransform: 'none' }}>
+            <Button
+              variant="contained"
+              style={{ textTransform: 'none' }}
+              onClick={() => setShowSignup(true)}
+            >
               Signup
             </Button>
             <Button variant="contained" style={{ textTransform: 'none' }}>
               Login
             </Button>
           </div>
+          <Signup show={showSignup} setShowModal={setShowSignup} />
         </Toolbar>
       </AppBar>
     </Box>
