@@ -1,9 +1,12 @@
+import Navbar from './Navbar';
+
 function App() {
   return (
-    <div className="font-extrabold underline">
-      Hello World
-    </div>
-  )
+    <>
+      <Navbar />
+      <div className="font-extrabold underline">Hello World</div>
+    </>
+  );
 }
 
-export default App
+export default App;
