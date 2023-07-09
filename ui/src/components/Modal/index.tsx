@@ -70,12 +70,7 @@ function Modal({ title, body, showModal, closeModal }: ModalProps) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style} className="flex flex-col justify-center">
-          {title && (
-            <ModalTitle
-              title="Create your account"
-              closeHandler={handleClose}
-            />
-          )}
+          {title && <ModalTitle title={title} closeHandler={handleClose} />}
           {body}
         </Box>
       </MuiModal>

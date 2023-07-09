@@ -2,12 +2,12 @@ import { Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import Modal from '../components/Modal';
 
-interface SignupProps {
-  showSignup: boolean;
+interface LoginProps {
+  showLogin: boolean;
   onClose: () => void;
 }
 
-function Signup({ showSignup, onClose }: SignupProps) {
+function Login({ showLogin, onClose }: LoginProps) {
   const [userDetails, setUserDetails] = useState({
     username: '',
     password: '',
@@ -25,7 +25,7 @@ function Signup({ showSignup, onClose }: SignupProps) {
 
   const handleSubmit = (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
-    console.log('Signup: ',  userDetails);
+    console.log('Login: ',  userDetails);
   };
 
   const modalBody = (
@@ -50,19 +50,19 @@ function Signup({ showSignup, onClose }: SignupProps) {
         onClick={handleSubmit}
         type="submit"
       >
-        Signup
+        Login
       </Button>
     </form>
   );
 
   return (
     <Modal
-      title="Create your account"
+      title="Login to your account"
       body={modalBody}
-      showModal={showSignup}
+      showModal={showLogin}
       closeModal={onClose}
     />
   );
 }
 
-export default Signup;
+export default Login;

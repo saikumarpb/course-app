@@ -8,9 +8,30 @@ import { Search, SearchIconWrapper, StyledInputBase } from './styled';
 import { Code } from '@mui/icons-material';
 import { useState } from 'react';
 import Signup from '../Signup';
+import Login from '../Login';
+
+interface AuthModal {
+  signup: boolean;
+  login: boolean;
+}
 
 export default function Navbar() {
-  const [showSignup, setShowSignup] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState<AuthModal>({
+    signup: false,
+    login: false,
+  });
+
+  const setAuthModal = (type: 'signup' | 'login', value: boolean) => {
+    setShowAuthModal((prev) => {
+      if (type === 'signup') {
+        return { ...prev, signup: value, login: false };
+      } else if (type === 'login') {
+        return { ...prev, signup: false, login: value };
+      }
+      return prev;
+    });
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" className="!bg-white">
@@ -40,17 +61,25 @@ export default function Navbar() {
             <Button
               variant="contained"
               style={{ textTransform: 'none' }}
-              onClick={() => setShowSignup(true)}
+              onClick={() => setAuthModal('signup', true)}
             >
               Signup
             </Button>
-            <Button variant="contained" style={{ textTransform: 'none' }}>
+            <Button
+              variant="contained"
+              style={{ textTransform: 'none' }}
+              onClick={() => setAuthModal('login', true)}
+            >
               Login
             </Button>
           </div>
           <Signup
-            showSignup={showSignup}
-            onClose={() => setShowSignup(false)}
+            showSignup={showAuthModal.signup}
+            onClose={() => setAuthModal('signup', false)}
+          />
+          <Login
+            showLogin={showAuthModal.login}
+            onClose={() => setAuthModal('login', false)}
           />
         </Toolbar>
       </AppBar>
