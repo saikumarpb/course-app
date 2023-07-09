@@ -2,7 +2,7 @@ import { Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import Modal from '../components/Modal';
 import { adminSignup } from './service';
-import { useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { toast } from 'react-toastify';
 
@@ -17,7 +17,7 @@ const defaultUserDetails = {
 };
 
 function Signup({ showSignup, onClose }: SignupProps) {
-  const [_, setAuth] = useRecoilState(authState);
+  const setAuth = useSetRecoilState(authState);
   const [userDetails, setUserDetails] = useState(defaultUserDetails);
 
   const handleFormChange = (key: 'username' | 'password', value: string) => {
