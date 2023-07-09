@@ -9,6 +9,8 @@ import { Code } from '@mui/icons-material';
 import { useState } from 'react';
 import Signup from '../Signup';
 import Login from '../Login';
+import { useRecoilState } from 'recoil';
+import { authState } from '../recoil/auth/atom';
 
 interface AuthModal {
   signup: boolean;
@@ -16,6 +18,8 @@ interface AuthModal {
 }
 
 export default function Navbar() {
+  const [auth, setAuth] = useRecoilState(authState);
+
   const [showAuthModal, setShowAuthModal] = useState<AuthModal>({
     signup: false,
     login: false,
@@ -31,6 +35,41 @@ export default function Navbar() {
       return prev;
     });
   };
+
+  const renderAuthButtons = () => {
+    return (
+      <div className="gap-2 flex">
+        <Button
+          variant="contained"
+          style={{ textTransform: 'none' }}
+          onClick={() => setAuthModal('signup', true)}
+        >
+          Signup
+        </Button>
+        <Button
+          variant="contained"
+          style={{ textTransform: 'none' }}
+          onClick={() => setAuthModal('login', true)}
+        >
+          Login
+        </Button>
+      </div>
+    );
+  };
+
+  const renderSearch = () => (
+    <div>
+      <Search>
+        <SearchIconWrapper>
+          <SearchIcon />
+        </SearchIconWrapper>
+        <StyledInputBase
+          placeholder="Search…"
+          inputProps={{ 'aria-label': 'search' }}
+        />
+      </Search>
+    </div>
+  );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -49,29 +88,8 @@ export default function Navbar() {
           </div>
 
           <div className="gap-2 flex">
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
-              />
-            </Search>
-            <Button
-              variant="contained"
-              style={{ textTransform: 'none' }}
-              onClick={() => setAuthModal('signup', true)}
-            >
-              Signup
-            </Button>
-            <Button
-              variant="contained"
-              style={{ textTransform: 'none' }}
-              onClick={() => setAuthModal('login', true)}
-            >
-              Login
-            </Button>
+            {renderSearch()}
+            {!auth.isLoggedin && renderAuthButtons()}
           </div>
           <Signup
             showSignup={showAuthModal.signup}
