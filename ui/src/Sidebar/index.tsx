@@ -6,10 +6,7 @@ import {
   Settings,
 } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import {
-  useRecoilValue,
-  useResetRecoilState,
-} from 'recoil';
+import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 
 interface SidebarButtonProps {
@@ -19,12 +16,12 @@ interface SidebarButtonProps {
 }
 
 function Sidebar() {
-  const auth= useRecoilValue(authState);
-  const resetAuth = useResetRecoilState(authState)
+  const auth = useRecoilValue(authState);
+  const resetAuth = useResetRecoilState(authState);
 
   const logoutHandler = () => {
     localStorage.removeItem('token');
-    resetAuth()
+    resetAuth();
   };
   return (
     <div className="w-[200px] bg-slate-200 left-0 bottom-0 z-0 flex flex-col gap-5 p-2">
@@ -42,11 +39,13 @@ function Sidebar() {
       {auth.isLoggedin && (
         <>
           <div className="border-b border-gray-300"></div>
-          <SidebarButton
-            icon={<FileDownload className="mr-2" />}
-            name={'Purchases'}
-            onClick={() => {}}
-          />
+          {auth.role === 'user' && (
+            <SidebarButton
+              icon={<FileDownload className="mr-2" />}
+              name={'Purchases'}
+              onClick={() => {}}
+            />
+          )}
           <SidebarButton
             icon={<Settings className="mr-2" />}
             name={'Settings'}

@@ -25,12 +25,15 @@ export default function Navbar() {
     console.log('from fetchUseer');
     if (auth.token) {
       try {
+        setAuth((current) => {return{...current, isLoading: true}})
         const user = await getUser(auth.token);
         setAuth((current) => {
           return {
             ...current,
             username: user.username,
             isLoggedin: true,
+            role: user.role,
+            isLoading: false
           };
         });
       } catch (e) {
@@ -112,7 +115,7 @@ export default function Navbar() {
 
           <div className="gap-2 flex">
             {renderSearch()}
-            {!auth.isLoggedin && renderAuthButtons()}
+            {!auth.isLoggedin && !auth.isLoading && renderAuthButtons()}
           </div>
           <Signup
             showSignup={showAuthModal.signup}
