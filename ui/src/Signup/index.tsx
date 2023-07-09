@@ -1,17 +1,24 @@
 import { Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import Modal from '../components/Modal';
+import { adminSignup } from './service';
+import { useRecoilState } from 'recoil';
+import { authState } from '../recoil/auth/atom';
+import { toast } from 'react-toastify';
 
 interface SignupProps {
   showSignup: boolean;
   onClose: () => void;
 }
 
+const defaultUserDetails = {
+  username: '',
+  password: '',
+};
+
 function Signup({ showSignup, onClose }: SignupProps) {
-  const [userDetails, setUserDetails] = useState({
-    username: '',
-    password: '',
-  });
+  const [_, setAuth] = useRecoilState(authState);
+  const [userDetails, setUserDetails] = useState(defaultUserDetails);
 
   const handleFormChange = (key: 'username' | 'password', value: string) => {
     setUserDetails((prev) => {
@@ -23,9 +30,24 @@ function Signup({ showSignup, onClose }: SignupProps) {
     });
   };
 
-  const handleSubmit = (e: React.MouseEvent<unknown, unknown>) => {
+  const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
-    console.log('Signup: ',  userDetails);
+    console.log('Signup: ', userDetails);
+    try {
+      const response = await toast.promise(adminSignup(userDetails), {
+        pending: 'Loading...',
+        success: 'Signup successful',
+        error: 'Signup failed',
+      });
+      setAuth((current) => {
+        return { ...current, isLoggedin: true, username: userDetails.username, token: response.token };
+      });
+      localStorage.setItem('token', response.token);
+      setUserDetails(defaultUserDetails);
+      onClose();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const modalBody = (

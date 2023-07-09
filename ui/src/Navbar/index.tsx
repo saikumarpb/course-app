@@ -9,7 +9,7 @@ import { Code } from '@mui/icons-material';
 import { useState } from 'react';
 import Signup from '../Signup';
 import Login from '../Login';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 
 interface AuthModal {
@@ -18,7 +18,7 @@ interface AuthModal {
 }
 
 export default function Navbar() {
-  const [auth, setAuth] = useRecoilState(authState);
+  const auth = useRecoilValue(authState);
 
   const [showAuthModal, setShowAuthModal] = useState<AuthModal>({
     signup: false,

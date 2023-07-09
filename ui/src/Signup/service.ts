@@ -1,0 +1,29 @@
+import axios, { AxiosResponse } from 'axios';
+import { BACKEND_URL } from '../utils/constants';
+
+interface SignupRequest {
+  username: string;
+  password: string;
+}
+
+interface SignupResponse {
+  message: string;
+  token: string;
+}
+
+export async function adminSignup(request: SignupRequest) {
+  try {
+    const response = await axios.post<SignupRequest, AxiosResponse<SignupResponse>>(
+      `${BACKEND_URL}/admin/signup`,
+      request,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (e) {
+    throw e;
+  }
+}
