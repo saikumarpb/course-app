@@ -13,7 +13,7 @@ export default function Navbar() {
   const [showSignup, setShowSignup] = useState(false);
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" style={{ backgroundColor: 'white' }}>
+      <AppBar position="static" className="!bg-white">
         <Toolbar className="flex justify-between">
           <div>
             <IconButton
@@ -48,7 +48,10 @@ export default function Navbar() {
               Login
             </Button>
           </div>
-          <Signup show={showSignup} setShowModal={setShowSignup} />
+          <Signup
+            showSignup={showSignup}
+            onClose={() => setShowSignup(false)}
+          />
         </Toolbar>
       </AppBar>
     </Box>
