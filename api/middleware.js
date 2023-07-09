@@ -1,5 +1,7 @@
-import { verify } from 'jsonwebtoken';
+import pkg from 'jsonwebtoken';
 import { JWT_SECRET } from './loadConfig.js';
+
+const { verify } = pkg
 
 export function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
