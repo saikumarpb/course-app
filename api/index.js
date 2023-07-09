@@ -4,12 +4,15 @@ import { connect, Types } from 'mongoose';
 import { User, Admin, Course } from './models.js';
 import { authMiddleware } from './middleware.js';
 import { DB_URL, PORT, JWT_SECRET, loadConfig } from './loadConfig.js';
+import cors from 'cors'
 
 const { sign } = jsonwebtoken;
 
 loadConfig();
 
 const app = express();
+
+app.use(cors())
 
 app.use(json());
 
