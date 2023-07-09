@@ -6,7 +6,11 @@ export function authMiddleware(req, res, next) {
 
   const url = req.url;
 
-  const role = url.split('/')[1] === 'admin' ? 'admin' : 'user';
+  let role;
+  const path = url.split('/')[1];
+  if (path === 'admin' || path === 'user') {
+    role = path;
+  }
 
   if (!authHeader) {
     return res.status(401).json({ error: 'No token provided' });
@@ -21,10 +25,10 @@ export function authMiddleware(req, res, next) {
   try {
     const decoded = verify(token, JWT_SECRET);
 
-    if (decoded.role !== role) {
+    if (role && decoded.role !== role) {
       res.status(401).send();
     } else {
-      req.username = decoded.username;
+      req.user = { username: decoded.username, role: decoded.role };
       next();
     }
   } catch (error) {

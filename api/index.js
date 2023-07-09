@@ -4,7 +4,7 @@ import { connect, Types } from 'mongoose';
 import { User, Admin, Course } from './models.js';
 import { authMiddleware } from './middleware.js';
 import { DB_URL, PORT, JWT_SECRET, loadConfig } from './loadConfig.js';
-import cors from 'cors'
+import cors from 'cors';
 
 const { sign } = jsonwebtoken;
 
@@ -12,13 +12,17 @@ loadConfig();
 
 const app = express();
 
-app.use(cors())
+app.use(cors());
 
 app.use(json());
 
 connect(DB_URL);
 
 // Admin routes
+app.get('/me', authMiddleware ,async(req, res) => {
+  res.json(req.user)
+})
+
 app.post('/admin/signup', async (req, res) => {
   const { username } = req.body;
 
@@ -30,12 +34,17 @@ app.post('/admin/signup', async (req, res) => {
   } else {
     const newAdmin = new Admin(req.body);
 
-    newAdmin.save();
-
-    res.status(201).send({
-      message: 'Admin created successfully',
-      token: getJwtToken(username, 'admin'),
-    });
+    newAdmin
+      .save()
+      .then(() => {
+        res.status(201).send({
+          message: 'Admin created successfully',
+          token: getJwtToken(username, 'admin'),
+        });
+      })
+      .catch((e) => {
+        res.status(400).send(e.message);
+      });
   }
 });
 
@@ -136,7 +145,7 @@ app.post('/users/courses/:courseId', authMiddleware, async (req, res) => {
     const course = await Course.findById(courseId);
 
     if (course) {
-      const user = await User.findOne({ username: req.username });
+      const user = await User.findOne({ username: req.user.username });
       if (user) {
         user.courses.push(course);
         try {
@@ -156,7 +165,7 @@ app.post('/users/courses/:courseId', authMiddleware, async (req, res) => {
 });
 
 app.get('/users/purchasedCourses', authMiddleware, async (req, res) => {
-  const user = await User.findOne({ username: req.username }).populate(
+  const user = await User.findOne({ username: req.user.username }).populate(
     'courses'
   );
   res.send({ purchasedCourses: user.courses });
