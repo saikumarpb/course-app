@@ -32,15 +32,25 @@ function Signup({ showSignup, onClose }: SignupProps) {
 
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
-    console.log('Signup: ', userDetails);
     try {
-      const response = await toast.promise(adminSignup(userDetails), {
-        pending: 'Loading...',
-        success: 'Signup successful',
-        error: 'Signup failed',
-      });
+      const response = await toast.promise(
+        adminSignup(userDetails),
+        {
+          pending: 'Loading...',
+          success: 'Signup successful',
+          error: 'Signup failed',
+        },
+        {
+          position: 'bottom-right',
+        }
+      );
       setAuth((current) => {
-        return { ...current, isLoggedin: true, username: userDetails.username, token: response.token };
+        return {
+          ...current,
+          isLoggedin: true,
+          username: userDetails.username,
+          token: response.token,
+        };
       });
       localStorage.setItem('token', response.token);
       setUserDetails(defaultUserDetails);

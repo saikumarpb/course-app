@@ -17,7 +17,7 @@ const defaultUserDetails = {
 };
 
 function Login({ showLogin, onClose }: LoginProps) {
-  const setAuth = useSetRecoilState(authState)
+  const setAuth = useSetRecoilState(authState);
 
   const [userDetails, setUserDetails] = useState(defaultUserDetails);
 
@@ -33,15 +33,23 @@ function Login({ showLogin, onClose }: LoginProps) {
 
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
-    console.log('Login: ',  userDetails);
     try {
-      const response = await toast.promise(adminLogin(userDetails), {
-        pending: 'Loading...',
-        success: 'Login successful',
-        error: 'Login failed',
-      });
+      const response = await toast.promise(
+        adminLogin(userDetails),
+        {
+          pending: 'Loading...',
+          success: 'Login successful',
+          error: 'Login failed',
+        },
+        { position: 'bottom-right' }
+      );
       setAuth((current) => {
-        return { ...current, isLoggedin: true, username: userDetails.username, token: response.token };
+        return {
+          ...current,
+          isLoggedin: true,
+          username: userDetails.username,
+          token: response.token,
+        };
       });
       localStorage.setItem('token', response.token);
       setUserDetails(defaultUserDetails);

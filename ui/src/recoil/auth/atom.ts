@@ -4,11 +4,11 @@ import { atom} from "recoil";
 interface Auth {
     isLoggedin: boolean;
     username?: string;
-    token?: string
+    token: string | null
 }
 
 export const authState = atom<Auth>({key: 'Auth', default: {
-    isLoggedin: typeof localStorage.getItem('token') === "string",
+    isLoggedin: false,
     username: undefined,
-    token: localStorage.getItem('token') || undefined
+    token: localStorage.getItem('token')
 }})

@@ -6,11 +6,12 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import { Search, SearchIconWrapper, StyledInputBase } from './styled';
 import { Code } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Signup from '../Signup';
 import Login from '../Login';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
+import { getUser } from './service';
 
 interface AuthModal {
   signup: boolean;
@@ -18,7 +19,29 @@ interface AuthModal {
 }
 
 export default function Navbar() {
-  const auth = useRecoilValue(authState);
+  const [auth, setAuth] = useRecoilState(authState);
+
+  const fetchUser = async () => {
+    console.log('from fetchUseer');
+    if (auth.token) {
+      try {
+        const user = await getUser(auth.token);
+        setAuth((current) => {
+          return {
+            ...current,
+            username: user.username,
+            isLoggedin: true,
+          };
+        });
+      } catch (e) {
+        localStorage.removeItem('token');
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const [showAuthModal, setShowAuthModal] = useState<AuthModal>({
     signup: false,
