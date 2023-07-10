@@ -8,6 +8,7 @@ import {
 import { Button } from '@mui/material';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarButtonProps {
   icon: JSX.Element;
@@ -19,6 +20,8 @@ function Sidebar() {
   const auth = useRecoilValue(authState);
   const resetAuth = useResetRecoilState(authState);
 
+  const navigate = useNavigate();
+
   const logoutHandler = () => {
     localStorage.removeItem('token');
     resetAuth();
@@ -29,12 +32,16 @@ function Sidebar() {
       <SidebarButton
         icon={<Home className="mr-2" />}
         name="Home"
-        onClick={() => {}}
+        onClick={() => {
+          navigate('');
+        }}
       />
       <SidebarButton
         icon={<School className="mr-2" />}
         name={'Courses'}
-        onClick={() => {}}
+        onClick={() => {
+          navigate('courses');
+        }}
       />
       {auth.isLoggedin && (
         <>
