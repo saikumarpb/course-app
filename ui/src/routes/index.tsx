@@ -9,7 +9,7 @@ const routes: RouteObject[] = [
     element: <App />,
     children: [
       {
-        path: '',
+        path: '/',
         element: <Home />,
       },
       {

@@ -22,7 +22,6 @@ export default function Navbar() {
   const [auth, setAuth] = useRecoilState(authState);
 
   const fetchUser = async () => {
-    console.log('from fetchUseer');
     if (auth.token) {
       try {
         setAuth((current) => {return{...current, isLoading: true}})
