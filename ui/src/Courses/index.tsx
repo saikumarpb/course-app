@@ -15,6 +15,7 @@ import { Course } from './types';
 import { courseList } from '../recoil/courses/atom';
 import CourseCard from '../components/CourseCard';
 import { AddCircle, FilterList } from '@mui/icons-material';
+import { featureNotImplemented } from '../utils/toast';
 
 const defaultCourse: Course = {
   title: '',
@@ -157,7 +158,9 @@ function Courses() {
       {auth.role === 'admin' && (
         <div className="flex flex-row-reverse gap-2 py-3">
           <Button
-            onClick={() => {}}
+            onClick={() => {
+              featureNotImplemented();
+            }}
             style={{ textTransform: 'none' }}
             className="w-fit"
             variant="contained"
@@ -188,35 +191,37 @@ function Courses() {
         closeModal={closeModal}
       />
 
-      <div className='flex flex-wrap gap-4 justify-center'>
+      <div className="flex flex-wrap gap-4 justify-center">
         {courses.map((course) => {
           return (
-              <CourseCard
-                // key={course._id}
-                title={course.title}
-                description={course.description}
-                imageLink={course.imageLink}
-                published={course.published}
-                price={course.price}
-                onClick={() => {}}
-                onEdit={
-                  auth.role === 'admin'
-                    ? () => {
-                        setEditCourseId(course._id);
-                        setFormData(() => {
-                          return {
-                            title: course.title,
-                            description: course.description,
-                            imageLink: course.imageLink,
-                            price: course.price,
-                            published: course.published,
-                          };
-                        });
-                        setShowModal(true);
-                      }
-                    : undefined
-                }
-              />
+            <CourseCard
+              // key={course._id}
+              title={course.title}
+              description={course.description}
+              imageLink={course.imageLink}
+              published={course.published}
+              price={course.price}
+              onClick={() => {
+                featureNotImplemented();
+              }}
+              onEdit={
+                auth.role === 'admin'
+                  ? () => {
+                      setEditCourseId(course._id);
+                      setFormData(() => {
+                        return {
+                          title: course.title,
+                          description: course.description,
+                          imageLink: course.imageLink,
+                          price: course.price,
+                          published: course.published,
+                        };
+                      });
+                      setShowModal(true);
+                    }
+                  : undefined
+              }
+            />
           );
         })}
       </div>

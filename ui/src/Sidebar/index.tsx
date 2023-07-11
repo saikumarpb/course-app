@@ -9,6 +9,7 @@ import { Button } from '@mui/material';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { useNavigate } from 'react-router-dom';
+import { featureNotImplemented } from '../utils/toast';
 
 interface SidebarButtonProps {
   icon: JSX.Element;
@@ -34,6 +35,7 @@ function Sidebar() {
         name="Home"
         onClick={() => {
           navigate('');
+          featureNotImplemented();
         }}
       />
       <SidebarButton
@@ -50,13 +52,17 @@ function Sidebar() {
             <SidebarButton
               icon={<FileDownload className="mr-2" />}
               name={'Purchases'}
-              onClick={() => {}}
+              onClick={() => {
+                featureNotImplemented();
+              }}
             />
           )}
           <SidebarButton
             icon={<Settings className="mr-2" />}
             name={'Settings'}
-            onClick={() => {}}
+            onClick={() => {
+              featureNotImplemented();
+            }}
           />
           <SidebarButton
             icon={<Logout className="mr-2" />}
