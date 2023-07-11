@@ -2,7 +2,6 @@ import {
   Button,
   FormControlLabel,
   FormGroup,
-  Grid,
   Switch,
   TextField,
 } from '@mui/material';
@@ -189,10 +188,9 @@ function Courses() {
         closeModal={closeModal}
       />
 
-      <Grid container spacing={2} justifyContent="center">
+      <div className='flex flex-wrap gap-4 justify-center'>
         {courses.map((course) => {
           return (
-            <Grid item key={course._id} className="h-100">
               <CourseCard
                 // key={course._id}
                 title={course.title}
@@ -219,10 +217,9 @@ function Courses() {
                     : undefined
                 }
               />
-            </Grid>
           );
         })}
-      </Grid>
+      </div>
     </div>
   );
 }
