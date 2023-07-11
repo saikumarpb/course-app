@@ -7,7 +7,7 @@ import { Course } from '../../Courses/types';
 
 type CardProps = Course & {
   onClick: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 };
 
 export default function CourseCard({
@@ -18,27 +18,41 @@ export default function CourseCard({
   onEdit,
 }: CardProps) {
   return (
-    <Card sx={{ maxWidth: 275 }}>
+    <Card sx={{ width: 300, height: '100%' }}>
       <CardMedia
         component="img"
-        height="194"
         image={imageLink}
         alt="Paella dish"
+        style={{ height: '200px', width: '300px' }}
       />
       <CardContent>
-        <div className='font-semibold'>
-          {title}
-        </div>
-        <div className='font-semibold pt-3'>₹ {price}</div>
+        <div className="font-semibold">{title}</div>
+        <div className="font-semibold pt-3">₹ {price}</div>
       </CardContent>
-      <CardActions className='flex gap-2'>
-        <Button size="small" onClick={() => onClick()} style={{textTransform: "none"}} variant='contained'>
+      <CardActions className="flex gap-2">
+        <Button
+          size="small"
+          onClick={() => onClick()}
+          style={{ textTransform: 'none' }}
+          variant="contained"
+        >
           View more
         </Button>
-        <Button size="small" onClick={() => onEdit()} style={{textTransform: "none"}} variant='contained'>
-          Edit
-        </Button>
+        {onEdit && (
+          <Button
+            size="small"
+            onClick={() => onEdit()}
+            style={{ textTransform: 'none' }}
+            variant="contained"
+          >
+            Edit
+          </Button>
+        )}
       </CardActions>
     </Card>
   );
 }
+
+CourseCard.defaultProps = {
+  onEdit: null,
+};

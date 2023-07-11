@@ -11,6 +11,15 @@ export async function postCourse(course: Course, token: string) {
   });
 }
 
+export async function updateCourse(courseId: string,course: Course, token: string) {
+  await axios.put<Course>(`${BACKEND_URL}/admin/courses/${courseId}`, course, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export async function fetchCourseList(role: 'admin' | 'user', token: string) {
   try {
     const response = await axios.get<CourseResponse>(

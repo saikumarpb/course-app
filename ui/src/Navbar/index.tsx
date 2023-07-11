@@ -9,9 +9,10 @@ import { Code } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import Signup from '../Signup';
 import Login from '../Login';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useResetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { getUser } from './service';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthModal {
   signup: boolean;
@@ -20,11 +21,16 @@ interface AuthModal {
 
 export default function Navbar() {
   const [auth, setAuth] = useRecoilState(authState);
+  const resetAuthState = useResetRecoilState(authState);
+
+  const navigate = useNavigate();
 
   const fetchUser = async () => {
     if (auth.token) {
       try {
-        setAuth((current) => {return{...current, isLoading: true}})
+        setAuth((current) => {
+          return { ...current, isLoading: true };
+        });
         const user = await getUser(auth.token);
         setAuth((current) => {
           return {
@@ -32,11 +38,12 @@ export default function Navbar() {
             username: user.username,
             isLoggedin: true,
             role: user.role,
-            isLoading: false
+            isLoading: false,
           };
         });
       } catch (e) {
         localStorage.removeItem('token');
+        resetAuthState();
       }
     }
   };
@@ -106,12 +113,12 @@ export default function Navbar() {
               edge="start"
               aria-label="menu"
               color="info"
+              onClick={() => navigate('/')}
             >
               <Code />
             </IconButton>
             <span className="font-bold text-black">100xdevs</span>
           </div>
-
           <div className="gap-2 flex">
             {renderSearch()}
             {!auth.isLoggedin && !auth.isLoading && renderAuthButtons()}

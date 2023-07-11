@@ -2,11 +2,12 @@ import {
   Button,
   FormControlLabel,
   FormGroup,
+  Grid,
   Switch,
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { fetchCourseList, postCourse } from './service';
+import { fetchCourseList, postCourse, updateCourse } from './service';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import Modal from '../components/Modal';
@@ -28,6 +29,7 @@ function Courses() {
   const [formData, setFormData] = useState(defaultCourse);
   const [showModal, setShowModal] = useState(false);
   const [courses, setCourses] = useRecoilState(courseList);
+  const [editCourseId, setEditCourseId] = useState('');
 
   const auth = useRecoilValue(authState);
 
@@ -45,8 +47,10 @@ function Courses() {
   };
 
   useEffect(() => {
-    getCourses();
-  }, [auth.role]);
+    if (auth.isLoggedin) {
+      getCourses();
+    }
+  }, [auth]);
 
   const handleFormChange = (key: keyof Course, value: string | boolean) => {
     setFormData((current) => {
@@ -59,13 +63,32 @@ function Courses() {
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
     try {
-      await toast.promise(postCourse(formData, auth.token!), {
-        pending: 'Adding the course',
-        success: 'Course added successfully',
-        error: 'Failed to add course',
-      });
+      if (editCourseId && auth.token) {
+        await toast.promise(
+          updateCourse(editCourseId, formData, auth.token),
+          {
+            pending: 'Updating the course',
+            success: 'Course updated successfully',
+            error: 'Failed to update course',
+          },
+          { position: 'bottom-right', autoClose: 3000 }
+        );
+
+        setEditCourseId('');
+      } else {
+        await toast.promise(
+          postCourse(formData, auth.token!),
+          {
+            pending: 'Adding the course',
+            success: 'Course added successfully',
+            error: 'Failed to add course',
+          },
+          { position: 'bottom-right', autoClose: 3000 }
+        );
+      }
       setFormData(() => defaultCourse);
       closeModal();
+      getCourses();
     } catch (e) {
       console.log('Failed to add course');
     }
@@ -95,7 +118,7 @@ function Courses() {
                 <Switch
                   checked={formData.published}
                   onChange={(e) =>
-                    handleFormChange('published', e.target.value === 'on')
+                    handleFormChange('published', e.target.checked)
                   }
                 />
               }
@@ -133,7 +156,7 @@ function Courses() {
   return (
     <div className="flex flex-col">
       {auth.role === 'admin' && (
-        <div className='flex flex-row-reverse gap-2 py-3'>
+        <div className="flex flex-row-reverse gap-2 py-3">
           <Button
             onClick={() => {}}
             style={{ textTransform: 'none' }}
@@ -158,28 +181,48 @@ function Courses() {
           </Button>
         </div>
       )}
+
       <Modal
-        title="Add course"
+        title={!editCourseId ? 'Add course' : 'Edit course'}
         body={addCourseModalBody()}
         showModal={showModal}
         closeModal={closeModal}
       />
-      <div className="flex pt-4">
+
+      <Grid container spacing={2} justifyContent="center">
         {courses.map((course) => {
           return (
-            <CourseCard
-              key={course._id}
-              title={course.title}
-              description={course.description}
-              imageLink={course.imageLink}
-              published={course.published}
-              price={course.price}
-              onClick={() => {}}
-              onEdit={() => {}}
-            />
+            <Grid item key={course._id} className="h-100">
+              <CourseCard
+                // key={course._id}
+                title={course.title}
+                description={course.description}
+                imageLink={course.imageLink}
+                published={course.published}
+                price={course.price}
+                onClick={() => {}}
+                onEdit={
+                  auth.role === 'admin'
+                    ? () => {
+                        setEditCourseId(course._id);
+                        setFormData(() => {
+                          return {
+                            title: course.title,
+                            description: course.description,
+                            imageLink: course.imageLink,
+                            price: course.price,
+                            published: course.published,
+                          };
+                        });
+                        setShowModal(true);
+                      }
+                    : undefined
+                }
+              />
+            </Grid>
           );
         })}
-      </div>
+      </Grid>
     </div>
   );
 }
