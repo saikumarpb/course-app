@@ -11,8 +11,21 @@ export async function postCourse(course: Course, token: string) {
   });
 }
 
-export async function updateCourse(courseId: string,course: Course, token: string) {
+export async function updateCourse(
+  courseId: string,
+  course: Course,
+  token: string
+) {
   await axios.put<Course>(`${BACKEND_URL}/admin/courses/${courseId}`, course, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export async function deleteCourse(courseId: string, token: string) {
+  await axios.delete(`${BACKEND_URL}/admin/courses/${courseId}`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,

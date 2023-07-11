@@ -6,7 +6,12 @@ import {
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { fetchCourseList, postCourse, updateCourse } from './service';
+import {
+  deleteCourse,
+  fetchCourseList,
+  postCourse,
+  updateCourse,
+} from './service';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import Modal from '../components/Modal';
@@ -29,7 +34,7 @@ function Courses() {
   const [formData, setFormData] = useState(defaultCourse);
   const [showModal, setShowModal] = useState(false);
   const [courses, setCourses] = useRecoilState(courseList);
-  const [editCourseId, setEditCourseId] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState('');
 
   const auth = useRecoilValue(authState);
 
@@ -60,21 +65,43 @@ function Courses() {
 
   const closeModal = () => setShowModal(false);
 
+  const handleDelete = async (courseId: string) => {
+    try {
+      if (auth.token) {
+        await toast.promise(
+          deleteCourse(courseId, auth.token),
+          {
+            pending: 'Deleting course ...',
+            success: 'Course deleted successfully',
+            error: 'Failed to delete course',
+          },
+          {
+            autoClose: 2000,
+            position: 'bottom-right',
+          }
+        ),
+          getCourses();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
     try {
-      if (editCourseId && auth.token) {
+      if (selectedCourseId && auth.token) {
         await toast.promise(
-          updateCourse(editCourseId, formData, auth.token),
+          updateCourse(selectedCourseId, formData, auth.token),
           {
             pending: 'Updating the course',
             success: 'Course updated successfully',
             error: 'Failed to update course',
           },
-          { position: 'bottom-right', autoClose: 3000 }
+          { position: 'bottom-right', autoClose: 2000 }
         );
 
-        setEditCourseId('');
+        setSelectedCourseId('');
       } else {
         await toast.promise(
           postCourse(formData, auth.token!),
@@ -83,7 +110,7 @@ function Courses() {
             success: 'Course added successfully',
             error: 'Failed to add course',
           },
-          { position: 'bottom-right', autoClose: 3000 }
+          { position: 'bottom-right', autoClose: 2000 }
         );
       }
       setFormData(() => defaultCourse);
@@ -153,6 +180,7 @@ function Courses() {
       </form>
     );
   };
+
   return (
     <div className="flex flex-col">
       {auth.role === 'admin' && (
@@ -184,13 +212,6 @@ function Courses() {
         </div>
       )}
 
-      <Modal
-        title={!editCourseId ? 'Add course' : 'Edit course'}
-        body={addCourseModalBody()}
-        showModal={showModal}
-        closeModal={closeModal}
-      />
-
       <div className="flex flex-wrap gap-4 justify-center">
         {courses.map((course) => {
           return (
@@ -207,7 +228,7 @@ function Courses() {
               onEdit={
                 auth.role === 'admin'
                   ? () => {
-                      setEditCourseId(course._id);
+                      setSelectedCourseId(course._id);
                       setFormData(() => {
                         return {
                           title: course.title,
@@ -221,10 +242,22 @@ function Courses() {
                     }
                   : undefined
               }
+              onDelete={
+                auth.role === 'admin'
+                  ? () => handleDelete(course._id)
+                  : undefined
+              }
             />
           );
         })}
       </div>
+
+      <Modal
+        title={!selectedCourseId ? 'Add course' : 'Edit course'}
+        body={addCourseModalBody()}
+        showModal={showModal}
+        closeModal={closeModal}
+      />
     </div>
   );
 }

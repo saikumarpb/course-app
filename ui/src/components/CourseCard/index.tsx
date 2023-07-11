@@ -8,6 +8,7 @@ import { Course } from '../../Courses/types';
 type CardProps = Course & {
   onClick: () => void;
   onEdit?: () => void;
+  onDelete?: () => void;
 };
 
 export default function CourseCard({
@@ -16,6 +17,7 @@ export default function CourseCard({
   price,
   onClick,
   onEdit,
+  onDelete,
 }: CardProps) {
   return (
     <Card sx={{ width: 300, height: '100%' }}>
@@ -48,6 +50,18 @@ export default function CourseCard({
             Edit
           </Button>
         )}
+
+        {onDelete && (
+          <Button
+            size="small"
+            onClick={() => onDelete()}
+            style={{ textTransform: 'none' }}
+            variant="outlined"
+            color="error"
+          >
+            Delete
+          </Button>
+        )}
       </CardActions>
     </Card>
   );
@@ -55,4 +69,5 @@ export default function CourseCard({
 
 CourseCard.defaultProps = {
   onEdit: null,
+  onDelete: null,
 };
