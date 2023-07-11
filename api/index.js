@@ -19,9 +19,9 @@ app.use(json());
 connect(DB_URL);
 
 // Admin routes
-app.get('/me', authMiddleware ,async(req, res) => {
-  res.json(req.user)
-})
+app.get('/me', authMiddleware, async (req, res) => {
+  res.json(req.user);
+});
 
 app.post('/admin/signup', async (req, res) => {
   const { username } = req.body;
@@ -93,6 +93,17 @@ app.put('/admin/courses/:courseId', authMiddleware, async (req, res) => {
 app.get('/admin/courses', authMiddleware, async (req, res) => {
   const courses = await Course.find({});
   res.send({ courses });
+});
+
+app.delete('/admin/courses/:courseId', authMiddleware, async (req, res) => {
+  const courseId = req.params.courseId;
+
+  try {
+    await Course.findByIdAndDelete(courseId);
+    res.status(200).send('Course deleted successfully');
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
 });
 
 // User routes
