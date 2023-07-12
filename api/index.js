@@ -182,6 +182,12 @@ app.get('/users/purchasedCourses', authMiddleware, async (req, res) => {
   res.send({ purchasedCourses: user.courses });
 });
 
+app.get('/courses', async (req, res) => {
+  const courses = await Course.find({ published: true });
+
+  res.send({ courses });
+});
+
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
 
 // Helper functions
