@@ -22,6 +22,7 @@ import { courseList } from '../recoil/courses/atom';
 import CourseCard from '../components/CourseCard';
 import { AddCircle, FilterList } from '@mui/icons-material';
 import { featureNotImplemented } from '../utils/toast';
+import { useNavigate } from 'react-router-dom';
 
 const defaultCourse: Course = {
   title: '',
@@ -36,7 +37,7 @@ function Courses() {
   const [showModal, setShowModal] = useState(false);
   const [courses, setCourses] = useRecoilState(courseList);
   const [selectedCourseId, setSelectedCourseId] = useState('');
-
+  const navigate = useNavigate();
   const auth = useRecoilValue(authState);
 
   const getCourses = async () => {
@@ -56,7 +57,7 @@ function Courses() {
   };
 
   useEffect(() => {
-    getCourses()
+    getCourses();
   }, [auth]);
 
   const handleFormChange = (key: keyof Course, value: string | boolean) => {
@@ -218,14 +219,14 @@ function Courses() {
         {courses.map((course) => {
           return (
             <CourseCard
-              // key={course._id}
+              key={course._id}
               title={course.title}
               description={course.description}
               imageLink={course.imageLink}
               published={course.published}
               price={course.price}
               onClick={() => {
-                featureNotImplemented();
+                navigate(`${course._id}`);
               }}
               onEdit={
                 auth.role === 'admin'

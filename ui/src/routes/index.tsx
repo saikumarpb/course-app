@@ -2,6 +2,7 @@ import { RouteObject, createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 import Courses from '../Courses';
 import Home from '../Home';
+import Course from '../Courses/course';
 
 const routes: RouteObject[] = [
   {
@@ -15,6 +16,10 @@ const routes: RouteObject[] = [
       {
         path: 'courses',
         element: <Courses />,
+      },
+      {
+        path: 'courses/:courseId',
+        element: <Course />,
       },
     ],
   },
