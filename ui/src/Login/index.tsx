@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { adminLogin } from './service';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
+import { getUser } from '../Navbar/service';
 
 interface LoginProps {
   showLogin: boolean;
@@ -43,12 +44,16 @@ function Login({ showLogin, onClose }: LoginProps) {
         },
         { position: 'bottom-right' }
       );
+
+      const me = await getUser(response.token);
+
       setAuth((current) => {
         return {
           ...current,
           isLoggedin: true,
           username: userDetails.username,
           token: response.token,
+          role: me.role,
         };
       });
       localStorage.setItem('token', response.token);
@@ -56,6 +61,7 @@ function Login({ showLogin, onClose }: LoginProps) {
       onClose();
     } catch (e) {
       console.log(e);
+      toast.error('Fetching user failed');
     }
   };
 

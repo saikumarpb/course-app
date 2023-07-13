@@ -24,7 +24,7 @@ export default function CourseCard({
       <CardMedia
         component="img"
         image={imageLink}
-        alt="Paella dish"
+        alt={title}
         style={{ height: '200px', width: '300px' }}
       />
       <CardContent>
