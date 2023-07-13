@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from 'react';
 import {
   deleteCourse,
+  fetchAdminCourseList,
   fetchCourseList,
   postCourse,
   updateCourse,
@@ -40,8 +41,11 @@ function Courses() {
 
   const getCourses = async () => {
     try {
-      if (auth.role && auth.token) {
-        const response = await fetchCourseList(auth.role!, auth.token!);
+      if (auth.role === 'admin' && auth.token) {
+        const response = await fetchAdminCourseList(auth.token);
+        setCourses(() => response);
+      } else {
+        const response = await fetchCourseList();
         setCourses(() => response);
       }
     } catch (e) {
@@ -52,9 +56,7 @@ function Courses() {
   };
 
   useEffect(() => {
-    if (auth.isLoggedin) {
-      getCourses();
-    }
+    getCourses()
   }, [auth]);
 
   const handleFormChange = (key: keyof Course, value: string | boolean) => {

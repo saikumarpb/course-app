@@ -33,10 +33,27 @@ export async function deleteCourse(courseId: string, token: string) {
   });
 }
 
-export async function fetchCourseList(role: 'admin' | 'user', token: string) {
+export async function fetchCourseList() {
   try {
     const response = await axios.get<CourseResponse>(
-      `${BACKEND_URL}/${role}/courses`,
+      `${BACKEND_URL}/courses`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data.courses;
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function fetchAdminCourseList(token: string) {
+  try {
+    const response = await axios.get<CourseResponse>(
+      `${BACKEND_URL}/admin/courses`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
