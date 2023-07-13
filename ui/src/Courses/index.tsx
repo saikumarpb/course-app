@@ -1,14 +1,18 @@
 import {
   Button,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   Switch,
   TextField,
 } from '@mui/material';
-import { useState } from 'react';
-import { deleteCourse, postCourse, updateCourse } from './service';
-import { useRecoilRefresher_UNSTABLE, useRecoilValue, useRecoilValueLoadable } from 'recoil';
+import { useEffect, useState } from 'react';
+import {
+  deleteCourse,
+  fetchCourseList,
+  postCourse,
+  updateCourse,
+} from './service';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
@@ -29,10 +33,29 @@ const defaultCourse: Course = {
 function Courses() {
   const [formData, setFormData] = useState(defaultCourse);
   const [showModal, setShowModal] = useState(false);
-  const courses = useRecoilValueLoadable(courseList);
+  const [courses, setCourses] = useRecoilState(courseList);
   const [selectedCourseId, setSelectedCourseId] = useState('');
 
   const auth = useRecoilValue(authState);
+
+  const getCourses = async () => {
+    try {
+      if (auth.role && auth.token) {
+        const response = await fetchCourseList(auth.role!, auth.token!);
+        setCourses(() => response);
+      }
+    } catch (e) {
+      toast.error('Fetching course failed', {
+        position: 'bottom-right',
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (auth.isLoggedin) {
+      getCourses();
+    }
+  }, [auth]);
 
   const handleFormChange = (key: keyof Course, value: string | boolean) => {
     setFormData((current) => {
@@ -43,59 +66,59 @@ function Courses() {
   const closeModal = () => setShowModal(false);
 
   const handleDelete = async (courseId: string) => {
-    // try {
-    //   if (auth.token) {
-    //     await toast.promise(
-    //       deleteCourse(courseId, auth.token),
-    //       {
-    //         pending: 'Deleting course ...',
-    //         success: 'Course deleted successfully',
-    //         error: 'Failed to delete course',
-    //       },
-    //       {
-    //         autoClose: 2000,
-    //         position: 'bottom-right',
-    //       }
-    //     );
-    //     useRecoilRefresher_UNSTABLE(courseList);
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      if (auth.token) {
+        await toast.promise(
+          deleteCourse(courseId, auth.token),
+          {
+            pending: 'Deleting course ...',
+            success: 'Course deleted successfully',
+            error: 'Failed to delete course',
+          },
+          {
+            autoClose: 2000,
+            position: 'bottom-right',
+          }
+        ),
+          getCourses();
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
-    // try {
-    //   if (selectedCourseId && auth.token) {
-    //     await toast.promise(
-    //       updateCourse(selectedCourseId, formData, auth.token),
-    //       {
-    //         pending: 'Updating the course',
-    //         success: 'Course updated successfully',
-    //         error: 'Failed to update course',
-    //       },
-    //       { position: 'bottom-right', autoClose: 2000 }
-    //     );
+    try {
+      if (selectedCourseId && auth.token) {
+        await toast.promise(
+          updateCourse(selectedCourseId, formData, auth.token),
+          {
+            pending: 'Updating the course',
+            success: 'Course updated successfully',
+            error: 'Failed to update course',
+          },
+          { position: 'bottom-right', autoClose: 2000 }
+        );
 
-    //     setSelectedCourseId('');
-    //   } else {
-    //     await toast.promise(
-    //       postCourse(formData, auth.token!),
-    //       {
-    //         pending: 'Adding the course',
-    //         success: 'Course added successfully',
-    //         error: 'Failed to add course',
-    //       },
-    //       { position: 'bottom-right', autoClose: 2000 }
-    //     );
-    //   }
-    //   setFormData(() => defaultCourse);
-    //   closeModal();
-    //   useRecoilRefresher_UNSTABLE(courseList);
-    // } catch (e) {
-    //   console.log('Failed to add course');
-    // }
+        setSelectedCourseId('');
+      } else {
+        await toast.promise(
+          postCourse(formData, auth.token!),
+          {
+            pending: 'Adding the course',
+            success: 'Course added successfully',
+            error: 'Failed to add course',
+          },
+          { position: 'bottom-right', autoClose: 2000 }
+        );
+      }
+      setFormData(() => defaultCourse);
+      closeModal();
+      getCourses();
+    } catch (e) {
+      console.log('Failed to add course');
+    }
   };
 
   const addCourseModalBody = () => {
@@ -158,61 +181,6 @@ function Courses() {
     );
   };
 
-  const renderCourses = () => {
-    switch(courses.state){
-      case "loading": {
-        return <CircularProgress />
-        break;
-      }
-
-      case "hasError": {
-        return <></>
-      }
-
-      case "hasValue": {
-        return courses.contents.map((course) => {
-          return (
-            <CourseCard
-              key={course._id}
-              title={course.title}
-              description={course.description}
-              imageLink={course.imageLink}
-              published={course.published}
-              price={course.price}
-              onClick={() => {
-                featureNotImplemented();
-              }}
-              onEdit={() => {}
-                // auth.role === 'admin'
-                //   ? () => {
-                //       setSelectedCourseId(course._id);
-                //       setFormData(() => {
-                //         return {
-                //           title: course.title,
-                //           description: course.description,
-                //           imageLink: course.imageLink,
-                //           price: course.price,
-                //           published: course.published,
-                //         };
-                //       });
-                //       setShowModal(true);
-                //     }
-                //   : undefined
-              }
-              onDelete={
-                () => handleDelete(course._id)
-                // auth.role === 'admin'
-                //   ? () => handleDelete(course._id)
-                //   : undefined
-              }
-            />
-          );
-        })
-      }
-
-    }
-  }
-
   return (
     <div className="flex flex-col">
       {auth.role === 'admin' && (
@@ -245,7 +213,43 @@ function Courses() {
       )}
 
       <div className="flex flex-wrap gap-4 justify-center">
-        {renderCourses()}
+        {courses.map((course) => {
+          return (
+            <CourseCard
+              // key={course._id}
+              title={course.title}
+              description={course.description}
+              imageLink={course.imageLink}
+              published={course.published}
+              price={course.price}
+              onClick={() => {
+                featureNotImplemented();
+              }}
+              onEdit={
+                auth.role === 'admin'
+                  ? () => {
+                      setSelectedCourseId(course._id);
+                      setFormData(() => {
+                        return {
+                          title: course.title,
+                          description: course.description,
+                          imageLink: course.imageLink,
+                          price: course.price,
+                          published: course.published,
+                        };
+                      });
+                      setShowModal(true);
+                    }
+                  : undefined
+              }
+              onDelete={
+                auth.role === 'admin'
+                  ? () => handleDelete(course._id)
+                  : undefined
+              }
+            />
+          );
+        })}
       </div>
 
       <Modal

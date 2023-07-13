@@ -50,7 +50,7 @@ export default function Navbar() {
 
   useEffect(() => {
     fetchUser();
-  }, [auth.isLoggedin]);
+  }, []);
 
   const [showAuthModal, setShowAuthModal] = useState<AuthModal>({
     signup: false,
