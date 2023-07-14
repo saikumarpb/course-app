@@ -38,7 +38,7 @@ export default function CourseCard({
           style={{ textTransform: 'none' }}
           variant="contained"
         >
-          View more
+          View
         </Button>
         {onEdit && (
           <Button

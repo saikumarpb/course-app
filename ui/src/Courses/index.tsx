@@ -214,7 +214,9 @@ function Courses() {
           </Button>
         </div>
       )}
-
+      <div className="w-full p-3 flex justify-center font-bold text-lg">
+        Courses
+      </div>
       <div className="flex flex-wrap gap-4 justify-center">
         {courses.map((course) => {
           return (
