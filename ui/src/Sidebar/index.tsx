@@ -35,7 +35,6 @@ function Sidebar() {
         name="Home"
         onClick={() => {
           navigate('');
-          featureNotImplemented();
         }}
       />
       <SidebarButton
