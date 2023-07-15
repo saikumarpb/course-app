@@ -2,8 +2,6 @@ import {
   Button,
   FormControlLabel,
   FormGroup,
-  Menu,
-  MenuItem,
   Switch,
   TextField,
 } from '@mui/material';
@@ -20,7 +18,7 @@ import { toast } from 'react-toastify';
 import { Course } from './types';
 import { courseList } from '../recoil/courses/atom';
 import CourseCard from '../components/CourseCard';
-import { AddCircle, FilterList } from '@mui/icons-material';
+import { AddCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 
@@ -35,41 +33,22 @@ const defaultCourse: Course = {
 function Courses() {
   const [formData, setFormData] = useState(defaultCourse);
   const [showModal, setShowModal] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const courses = useRecoilValueLoadable(courseList);
   const resetCourseList = useResetRecoilState(courseList);
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const navigate = useNavigate();
   const auth = useRecoilValue(authState);
-  const open = Boolean(anchorEl);
+  // const open = Boolean(anchorEl);
 
-  const handleSelectFilter = (e: React.MouseEvent<unknown, unknown>) => {
-    console.log(e.target);
-    handleCloseFilterMenu();
-  };
-  const handleCloseFilterMenu = () => {
-    setAnchorEl(null);
-  };
-  // const getCourses = async () => {
-  //   try {
-  //     if (auth.role === 'admin' && auth.token) {
-  //       const response = await fetchAdminCourseList(auth.token);
-  //       setCourses(() => response);
-  //     } else {
-  //       const response = await fetchCourseList();
-  //       setCourses(() => response);
-  //     }
-  //   } catch (e) {
-  //     toast.error('Fetching course failed', {
-  //       position: 'bottom-right',
-  //     });
-  //   }
+  // const handleSelectFilter = (e: React.MouseEvent<unknown, unknown>) => {
+  //   console.log(e.target);
+  //   handleCloseFilterMenu();
   // };
-
-  // useEffect(() => {
-  //   getCourses();
-  // }, [auth]);
+  // const handleCloseFilterMenu = () => {
+  //   setAnchorEl(null);
+  // };
 
   const handleFormChange = (key: keyof Course, value: string | boolean) => {
     setFormData((current) => {
@@ -206,7 +185,7 @@ function Courses() {
           <div className="flex flex-col">
             {auth.role === 'admin' && (
               <div className="flex flex-row-reverse gap-2 py-3">
-                <Button
+                {/* <Button
                   onClick={(e) => {
                     setAnchorEl(e.currentTarget);
                   }}
@@ -218,8 +197,7 @@ function Courses() {
                     Filter
                     <FilterList className="ml-3" />
                   </div>
-                </Button>
-                <Menu
+                  <Menu
                   id="basic-menu"
                   anchorEl={anchorEl}
                   open={open}
@@ -232,6 +210,8 @@ function Courses() {
                   <MenuItem onClick={handleSelectFilter}>Unpublished</MenuItem>
                   <MenuItem onClick={handleSelectFilter}>All courses</MenuItem>
                 </Menu>
+                </Button> */}
+
                 <Button
                   onClick={() => setShowModal(true)}
                   style={{ textTransform: 'none' }}
