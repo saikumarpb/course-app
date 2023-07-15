@@ -18,14 +18,18 @@ const fetchCourses = selector({
     } catch (e) {
       console.log(e);
     }
-    const searchString = get(courseSearchString).toLowerCase()
-
-    if(searchString){
-      return list.filter(course => course.title.toLowerCase().includes(searchString))
-    }
     return list;
   },
 });
+
+export const filterdCourseList = selector({key: 'filteredCourseList', get: ({get}) => {
+  const courses = get(courseList)
+  const searchString = get(courseSearchString).toLowerCase()
+  if(searchString){
+    return courses.filter(course => course.title.toLowerCase().includes(searchString))
+  }
+  return courseList
+}})
 
 export const courseList = atom<(Course & { _id: string })[]>({
   key: 'courseList',

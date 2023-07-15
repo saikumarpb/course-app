@@ -16,7 +16,7 @@ import { authState } from '../recoil/auth/atom';
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
 import { Course } from './types';
-import { courseList, courseSearchString } from '../recoil/courses/atom';
+import { courseList, courseSearchString, filterdCourseList } from '../recoil/courses/atom';
 import CourseCard from '../components/CourseCard';
 import { AddCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +35,7 @@ function Courses() {
   const [showModal, setShowModal] = useState(false);
   // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const courses = useRecoilValueLoadable(courseList);
+  const courses = useRecoilValueLoadable(filterdCourseList);
   const resetCourseList = useResetRecoilState(courseList);
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const navigate = useNavigate();
@@ -232,7 +232,7 @@ function Courses() {
               </div>
             )}
             {courses.contents.length === 0 && searchString ? (
-              <div className="m-6 bg-red-100 rounded font-semibold text-xl text-center text-red-900">
+              <div className="m-6 bg-red-100 rounded font-semibold text-xl text-center text-red-900 p-3">
                 Course not found
               </div>
             ) : (
