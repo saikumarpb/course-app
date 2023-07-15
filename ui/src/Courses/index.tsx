@@ -7,15 +7,13 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { deleteCourse, postCourse, updateCourse } from './service';
 import {
-  deleteCourse,
-  fetchAdminCourseList,
-  fetchCourseList,
-  postCourse,
-  updateCourse,
-} from './service';
-import { useRecoilState, useRecoilValue } from 'recoil';
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useResetRecoilState,
+} from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
@@ -24,6 +22,7 @@ import { courseList } from '../recoil/courses/atom';
 import CourseCard from '../components/CourseCard';
 import { AddCircle, FilterList } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import Loading from '../components/Loading';
 
 const defaultCourse: Course = {
   title: '',
@@ -38,7 +37,8 @@ function Courses() {
   const [showModal, setShowModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const [courses, setCourses] = useRecoilState(courseList);
+  const courses = useRecoilValueLoadable(courseList);
+  const resetCourseList = useResetRecoilState(courseList);
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const navigate = useNavigate();
   const auth = useRecoilValue(authState);
@@ -51,25 +51,25 @@ function Courses() {
   const handleCloseFilterMenu = () => {
     setAnchorEl(null);
   };
-  const getCourses = async () => {
-    try {
-      if (auth.role === 'admin' && auth.token) {
-        const response = await fetchAdminCourseList(auth.token);
-        setCourses(() => response);
-      } else {
-        const response = await fetchCourseList();
-        setCourses(() => response);
-      }
-    } catch (e) {
-      toast.error('Fetching course failed', {
-        position: 'bottom-right',
-      });
-    }
-  };
+  // const getCourses = async () => {
+  //   try {
+  //     if (auth.role === 'admin' && auth.token) {
+  //       const response = await fetchAdminCourseList(auth.token);
+  //       setCourses(() => response);
+  //     } else {
+  //       const response = await fetchCourseList();
+  //       setCourses(() => response);
+  //     }
+  //   } catch (e) {
+  //     toast.error('Fetching course failed', {
+  //       position: 'bottom-right',
+  //     });
+  //   }
+  // };
 
-  useEffect(() => {
-    getCourses();
-  }, [auth]);
+  // useEffect(() => {
+  //   getCourses();
+  // }, [auth]);
 
   const handleFormChange = (key: keyof Course, value: string | boolean) => {
     setFormData((current) => {
@@ -93,8 +93,8 @@ function Courses() {
             autoClose: 2000,
             position: 'bottom-right',
           }
-        ),
-          getCourses();
+        );
+        resetCourseList();
       }
     } catch (e) {
       console.log(e);
@@ -129,7 +129,7 @@ function Courses() {
       }
       setFormData(() => defaultCourse);
       closeModal();
-      getCourses();
+      resetCourseList();
     } catch (e) {
       console.log('Failed to add course');
     }
@@ -195,99 +195,113 @@ function Courses() {
     );
   };
 
-  return (
-    <div className="flex flex-col">
-      {auth.role === 'admin' && (
-        <div className="flex flex-row-reverse gap-2 py-3">
-          <Button
-            onClick={(e) => {
-              setAnchorEl(e.currentTarget);
-            }}
-            style={{ textTransform: 'none' }}
-            className="w-fit"
-            variant="contained"
-          >
-            <div className="flex justify-center">
-              Filter
-              <FilterList className="ml-3" />
+  const RenderCourses = () => {
+    switch (courses.state) {
+      case 'loading':
+        return <Loading />;
+      case 'hasError':
+        return <div>Something went wrong please try again</div>;
+      case 'hasValue':
+        return (
+          <div className="flex flex-col">
+            {auth.role === 'admin' && (
+              <div className="flex flex-row-reverse gap-2 py-3">
+                <Button
+                  onClick={(e) => {
+                    setAnchorEl(e.currentTarget);
+                  }}
+                  style={{ textTransform: 'none' }}
+                  className="w-fit"
+                  variant="contained"
+                >
+                  <div className="flex justify-center">
+                    Filter
+                    <FilterList className="ml-3" />
+                  </div>
+                </Button>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleCloseFilterMenu}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                >
+                  <MenuItem onClick={handleSelectFilter}>Published</MenuItem>
+                  <MenuItem onClick={handleSelectFilter}>Unpublished</MenuItem>
+                  <MenuItem onClick={handleSelectFilter}>All courses</MenuItem>
+                </Menu>
+                <Button
+                  onClick={() => setShowModal(true)}
+                  style={{ textTransform: 'none' }}
+                  className="w-fit"
+                  variant="contained"
+                >
+                  <div className="flex justify-center">
+                    Add Course
+                    <AddCircle className="ml-3" />
+                  </div>
+                </Button>
+              </div>
+            )}
+            <div className="w-full p-3 flex justify-center font-bold text-2xl">
+              Courses
             </div>
-          </Button>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleCloseFilterMenu}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            <MenuItem onClick={handleSelectFilter}>Published</MenuItem>
-            <MenuItem onClick={handleSelectFilter}>Unpublished</MenuItem>
-            <MenuItem onClick={handleSelectFilter}>All courses</MenuItem>
-          </Menu>
-          <Button
-            onClick={() => setShowModal(true)}
-            style={{ textTransform: 'none' }}
-            className="w-fit"
-            variant="contained"
-          >
-            <div className="flex justify-center">
-              Add Course
-              <AddCircle className="ml-3" />
-            </div>
-          </Button>
-        </div>
-      )}
-      <div className="w-full p-3 flex justify-center font-bold text-lg">
-        Courses
-      </div>
-      <div className="flex flex-wrap gap-4 justify-center">
-        {courses.map((course) => {
-          return (
-            <CourseCard
-              key={course._id}
-              title={course.title}
-              description={course.description}
-              imageLink={course.imageLink}
-              published={course.published}
-              price={course.price}
-              onClick={() => {
-                navigate(`${course._id}`);
-              }}
-              onEdit={
-                auth.role === 'admin'
-                  ? () => {
-                      setSelectedCourseId(course._id);
-                      setFormData(() => {
-                        return {
-                          title: course.title,
-                          description: course.description,
-                          imageLink: course.imageLink,
-                          price: course.price,
-                          published: course.published,
-                        };
-                      });
-                      setShowModal(true);
+            <div className="flex flex-wrap gap-4 justify-center">
+              {courses.contents.map((course) => {
+                return (
+                  <CourseCard
+                    key={course._id}
+                    title={course.title}
+                    description={course.description}
+                    imageLink={course.imageLink}
+                    published={course.published}
+                    price={course.price}
+                    onClick={() => {
+                      navigate(`${course._id}`);
+                    }}
+                    onEdit={
+                      auth.role === 'admin'
+                        ? () => {
+                            setSelectedCourseId(course._id);
+                            setFormData(() => {
+                              return {
+                                title: course.title,
+                                description: course.description,
+                                imageLink: course.imageLink,
+                                price: course.price,
+                                published: course.published,
+                              };
+                            });
+                            setShowModal(true);
+                          }
+                        : undefined
                     }
-                  : undefined
-              }
-              onDelete={
-                auth.role === 'admin'
-                  ? () => handleDelete(course._id)
-                  : undefined
-              }
-            />
-          );
-        })}
-      </div>
+                    onDelete={
+                      auth.role === 'admin'
+                        ? () => handleDelete(course._id)
+                        : undefined
+                    }
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+    }
+  };
 
+  return (
+    <>
+      <RenderCourses />
       <Modal
         title={!selectedCourseId ? 'Add course' : 'Edit course'}
         body={addCourseModalBody()}
         showModal={showModal}
         closeModal={closeModal}
       />
-    </div>
+    </>
   );
 }
 
