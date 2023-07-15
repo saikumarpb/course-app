@@ -5,7 +5,7 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { deleteCourse, postCourse, updateCourse } from './service';
 import {
   useRecoilValue,
@@ -16,7 +16,7 @@ import { authState } from '../recoil/auth/atom';
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
 import { Course } from './types';
-import { courseList } from '../recoil/courses/atom';
+import { courseList, courseSearchString } from '../recoil/courses/atom';
 import CourseCard from '../components/CourseCard';
 import { AddCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -40,6 +40,12 @@ function Courses() {
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const navigate = useNavigate();
   const auth = useRecoilValue(authState);
+  const searchString = useRecoilValue(courseSearchString);
+  const resetSearchString = useResetRecoilState(courseSearchString);
+
+  useEffect(() => {
+    resetSearchString();
+  }, []);
   // const open = Boolean(anchorEl);
 
   // const handleSelectFilter = (e: React.MouseEvent<unknown, unknown>) => {
@@ -225,48 +231,56 @@ function Courses() {
                 </Button>
               </div>
             )}
-            <div className="w-full p-3 flex justify-center font-bold text-2xl">
-              Courses
-            </div>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {courses.contents.map((course) => {
-                return (
-                  <CourseCard
-                    key={course._id}
-                    title={course.title}
-                    description={course.description}
-                    imageLink={course.imageLink}
-                    published={course.published}
-                    price={course.price}
-                    onClick={() => {
-                      navigate(`${course._id}`);
-                    }}
-                    onEdit={
-                      auth.role === 'admin'
-                        ? () => {
-                            setSelectedCourseId(course._id);
-                            setFormData(() => {
-                              return {
-                                title: course.title,
-                                description: course.description,
-                                imageLink: course.imageLink,
-                                price: course.price,
-                                published: course.published,
-                              };
-                            });
-                            setShowModal(true);
-                          }
-                        : undefined
-                    }
-                    onDelete={
-                      auth.role === 'admin'
-                        ? () => handleDelete(course._id)
-                        : undefined
-                    }
-                  />
-                );
-              })}
-            </div>
+            {courses.contents.length === 0 && searchString ? (
+              <div className="m-6 bg-red-100 rounded font-semibold text-xl text-center text-red-900">
+                Course not found
+              </div>
+            ) : (
+              <>
+                <div className="w-full p-3 flex justify-center font-bold text-2xl">
+                  Courses
+                </div>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  {courses.contents.map((course) => {
+                    return (
+                      <CourseCard
+                        key={course._id}
+                        title={course.title}
+                        description={course.description}
+                        imageLink={course.imageLink}
+                        published={course.published}
+                        price={course.price}
+                        onClick={() => {
+                          navigate(`${course._id}`);
+                        }}
+                        onEdit={
+                          auth.role === 'admin'
+                            ? () => {
+                                setSelectedCourseId(course._id);
+                                setFormData(() => {
+                                  return {
+                                    title: course.title,
+                                    description: course.description,
+                                    imageLink: course.imageLink,
+                                    price: course.price,
+                                    published: course.published,
+                                  };
+                                });
+                                setShowModal(true);
+                              }
+                            : undefined
+                        }
+                        onDelete={
+                          auth.role === 'admin'
+                            ? () => handleDelete(course._id)
+                            : undefined
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         );
     }

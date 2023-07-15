@@ -18,6 +18,11 @@ const fetchCourses = selector({
     } catch (e) {
       console.log(e);
     }
+    const searchString = get(courseSearchString).toLowerCase()
+
+    if(searchString){
+      return list.filter(course => course.title.toLowerCase().includes(searchString))
+    }
     return list;
   },
 });
@@ -36,3 +41,7 @@ export const filteredCourse = selectorFamily({
       return list.find((course) => course._id === courseId);
     },
 });
+
+
+
+export const courseSearchString = atom({key:'courseSearchString', default: ''})

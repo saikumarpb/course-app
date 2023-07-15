@@ -13,6 +13,7 @@ import { useRecoilState, useResetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { getUser } from './service';
 import { useNavigate } from 'react-router-dom';
+import { courseSearchString } from '../recoil/courses/atom';
 
 interface AuthModal {
   signup: boolean;
@@ -22,7 +23,7 @@ interface AuthModal {
 export default function Navbar() {
   const [auth, setAuth] = useRecoilState(authState);
   const resetAuthState = useResetRecoilState(authState);
-
+  const [searchString, setSearchString] = useRecoilState(courseSearchString)
   const navigate = useNavigate();
 
   const fetchUser = async () => {
@@ -98,6 +99,8 @@ export default function Navbar() {
         <StyledInputBase
           placeholder="Search…"
           inputProps={{ 'aria-label': 'search' }}
+          onChange={(e) => setSearchString(e.target.value)}
+          value={searchString}
         />
       </Search>
     </div>
