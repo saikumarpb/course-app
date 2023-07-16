@@ -1,10 +1,11 @@
 import { Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import Modal from '../components/Modal';
-import { userSignup } from './service';
+import { SignupResponse, adminSignup, userSignup } from './service';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
 interface SignupProps {
   showSignup: boolean;
@@ -19,6 +20,7 @@ const defaultUserDetails = {
 function Signup({ showSignup, onClose }: SignupProps) {
   const setAuth = useSetRecoilState(authState);
   const [userDetails, setUserDetails] = useState(defaultUserDetails);
+  const { admin } = useParams();
 
   const handleFormChange = (key: 'username' | 'password', value: string) => {
     setUserDetails((prev) => {
@@ -36,13 +38,19 @@ function Signup({ showSignup, onClose }: SignupProps) {
       position: 'bottom-right',
     });
     try {
-      const response = await userSignup(userDetails);
+      let response: SignupResponse | undefined;
+      if (admin === 'admin') {
+        response = await adminSignup(userDetails);
+      } else {
+        response = await userSignup(userDetails);
+      }
       setAuth((current) => {
         return {
           ...current,
           isLoggedin: true,
           username: userDetails.username,
           token: response?.token || '',
+          role: admin === 'admin' ? 'admin' : 'user',
         };
       });
       localStorage.setItem('token', response?.token || '');

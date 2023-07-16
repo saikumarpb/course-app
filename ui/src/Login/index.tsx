@@ -2,10 +2,11 @@ import { Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
-import { userLogin } from './service';
+import { LoginResponse, adminLogin, userLogin } from './service';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { getUser } from '../Navbar/service';
+import { useParams } from 'react-router-dom';
 
 interface LoginProps {
   showLogin: boolean;
@@ -22,6 +23,8 @@ function Login({ showLogin, onClose }: LoginProps) {
 
   const [userDetails, setUserDetails] = useState(defaultUserDetails);
 
+  const { admin } = useParams();
+
   const handleFormChange = (key: 'username' | 'password', value: string) => {
     setUserDetails((prev) => {
       if (key === 'username') {
@@ -34,9 +37,15 @@ function Login({ showLogin, onClose }: LoginProps) {
 
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
+    console.log(admin);
     const toastId = toast.loading('Loading ...', { position: 'bottom-right' });
     try {
-      const response = await userLogin(userDetails);
+      let response: LoginResponse | undefined;
+      if (admin === 'admin') {
+        response = await adminLogin(userDetails);
+      } else {
+        response = await userLogin(userDetails);
+      }
 
       const me = await getUser(response?.token || '');
 

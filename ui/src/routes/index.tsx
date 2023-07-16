@@ -23,6 +23,24 @@ const routes: RouteObject[] = [
       },
     ],
   },
+  {
+    path: '/:admin',
+    element: <App />,
+    children: [
+      {
+        path: '/:admin/',
+        element: <Home />,
+      },
+      {
+        path: 'courses',
+        element: <Courses />,
+      },
+      {
+        path: 'courses/:courseId',
+        element: <Course />,
+      },
+    ],
+  },
 ];
 
 export const router = createBrowserRouter(routes);

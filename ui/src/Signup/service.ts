@@ -6,7 +6,7 @@ interface SignupRequest {
   password: string;
 }
 
-interface SignupResponse {
+export interface SignupResponse {
   message: string;
   token: string;
 }
@@ -23,7 +23,7 @@ export async function adminSignup(request: SignupRequest) {
     });
     return response.data;
   } catch (e) {
-    throw e;
+    if (e instanceof AxiosError) throw new Error(e.response?.data?.message);
   }
 }
 

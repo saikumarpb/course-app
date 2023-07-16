@@ -30,7 +30,7 @@ app.post('/admin/signup', async (req, res) => {
   const admin = await Admin.findOne({ username });
 
   if (user || admin) {
-    res.status(400).send('Username taken');
+    res.status(400).json({ message: 'Username taken' });
   } else {
     const newAdmin = new Admin(req.body);
 
@@ -43,7 +43,7 @@ app.post('/admin/signup', async (req, res) => {
         });
       })
       .catch((e) => {
-        res.status(400).send(e.message);
+        res.status(400).json({ message: e.message });
       });
   }
 });
@@ -58,7 +58,7 @@ app.post('/admin/login', async (req, res) => {
       token: getJwtToken(admin.username, 'admin'),
     });
   } else {
-    res.status(401).send('Unauthorized');
+    res.status(401).json({ message: 'Invalid credentials' });
   }
 });
 

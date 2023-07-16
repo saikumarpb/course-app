@@ -6,7 +6,7 @@ interface LoginRequest {
   password: string;
 }
 
-interface LoginResponse {
+export interface LoginResponse {
   message: string;
   token: string;
 }
@@ -23,7 +23,7 @@ export async function adminLogin(request: LoginRequest) {
     });
     return response.data;
   } catch (e) {
-    throw e;
+    if (e instanceof AxiosError) throw new Error(e.response?.data?.message);
   }
 }
 
