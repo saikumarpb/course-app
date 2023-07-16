@@ -6,7 +6,6 @@ import { userLogin } from './service';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { getUser } from '../Navbar/service';
-import { AxiosError } from 'axios';
 
 interface LoginProps {
   showLogin: boolean;
@@ -39,18 +38,18 @@ function Login({ showLogin, onClose }: LoginProps) {
     try {
       const response = await userLogin(userDetails);
 
-      const me = await getUser(response.token);
+      const me = await getUser(response?.token || '');
 
       setAuth((current) => {
         return {
           ...current,
           isLoggedin: true,
           username: userDetails.username,
-          token: response.token,
+          token: response?.token || '',
           role: me.role,
         };
       });
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('token', response?.token || '');
       setUserDetails(defaultUserDetails);
       toast.update(toastId, {
         render: 'Login Successful',
@@ -59,13 +58,14 @@ function Login({ showLogin, onClose }: LoginProps) {
         autoClose: 1500,
       });
       onClose();
-    } catch (e: AxiosError<unknown, any>) {
-      toast.update(toastId, {
-        render: e.response.data.message,
-        type: 'error',
-        isLoading: false,
-        autoClose: 1500,
-      });
+    } catch (e) {
+      if (e instanceof Error)
+        toast.update(toastId, {
+          render: e.message,
+          type: 'error',
+          isLoading: false,
+          autoClose: 1500,
+        });
     }
   };
 

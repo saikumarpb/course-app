@@ -5,7 +5,6 @@ import { userSignup } from './service';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { toast } from 'react-toastify';
-import { AxiosError } from 'axios';
 
 interface SignupProps {
   showSignup: boolean;
@@ -43,10 +42,10 @@ function Signup({ showSignup, onClose }: SignupProps) {
           ...current,
           isLoggedin: true,
           username: userDetails.username,
-          token: response.token,
+          token: response?.token || '',
         };
       });
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('token', response?.token || '');
       setUserDetails(defaultUserDetails);
       toast.update(toastId, {
         isLoading: false,
@@ -55,14 +54,14 @@ function Signup({ showSignup, onClose }: SignupProps) {
         type: 'success',
       });
       onClose();
-    } catch (e: AxiosError<>) {
-      toast.update(toastId, {
-        isLoading: false,
-        render: e.response.data.message,
-        autoClose: 1500,
-        type: 'error',
-      });
-      console.log(e);
+    } catch (e) {
+      if (e instanceof Error)
+        toast.update(toastId, {
+          isLoading: false,
+          render: e.message,
+          autoClose: 1500,
+          type: 'error',
+        });
     }
   };
 

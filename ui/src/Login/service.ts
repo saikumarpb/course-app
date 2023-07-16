@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 
 interface LoginRequest {
@@ -39,6 +39,6 @@ export async function userLogin(request: LoginRequest) {
     });
     return response.data;
   } catch (e) {
-    throw e;
+    if (e instanceof AxiosError) throw new Error(e.response?.data?.message);
   }
 }
