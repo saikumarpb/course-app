@@ -107,14 +107,14 @@ app.delete('/admin/courses/:courseId', authMiddleware, async (req, res) => {
 });
 
 // User routes
-app.post('/users/signup', async (req, res) => {
+app.post('/user/signup', async (req, res) => {
   const { username } = req.body;
 
   const user = await User.findOne({ username });
   const admin = await Admin.findOne({ username });
 
   if (user || admin) {
-    res.status(400).send('Username taken');
+    res.status(400).json({ message: 'Username taken' });
   } else {
     try {
       const newUser = new User(req.body);
@@ -130,7 +130,7 @@ app.post('/users/signup', async (req, res) => {
   }
 });
 
-app.post('/users/login', async (req, res) => {
+app.post('/user/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username, password });
 
@@ -140,7 +140,7 @@ app.post('/users/login', async (req, res) => {
       token: getJwtToken(user.username),
     });
   } else {
-    res.status(401).send('Unauthorized');
+    res.status(401).json({ message: 'Invalid credentials' });
   }
 });
 
