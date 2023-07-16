@@ -1,10 +1,11 @@
 import { Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import Modal from '../components/Modal';
-import { adminSignup } from './service';
+import { userSignup } from './service';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { toast } from 'react-toastify';
+import { AxiosError } from 'axios';
 
 interface SignupProps {
   showSignup: boolean;
@@ -32,18 +33,11 @@ function Signup({ showSignup, onClose }: SignupProps) {
 
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
+    const toastId = toast.loading('Signing in ...', {
+      position: 'bottom-right',
+    });
     try {
-      const response = await toast.promise(
-        adminSignup(userDetails),
-        {
-          pending: 'Loading...',
-          success: 'Signup successful',
-          error: 'Signup failed',
-        },
-        {
-          position: 'bottom-right',
-        }
-      );
+      const response = await userSignup(userDetails);
       setAuth((current) => {
         return {
           ...current,
@@ -54,8 +48,20 @@ function Signup({ showSignup, onClose }: SignupProps) {
       });
       localStorage.setItem('token', response.token);
       setUserDetails(defaultUserDetails);
+      toast.update(toastId, {
+        isLoading: false,
+        render: 'Signup successful',
+        autoClose: 1500,
+        type: 'success',
+      });
       onClose();
-    } catch (e) {
+    } catch (e: AxiosError<>) {
+      toast.update(toastId, {
+        isLoading: false,
+        render: e.response.data.message,
+        autoClose: 1500,
+        type: 'error',
+      });
       console.log(e);
     }
   };

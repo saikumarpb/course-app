@@ -13,15 +13,30 @@ interface SignupResponse {
 
 export async function adminSignup(request: SignupRequest) {
   try {
-    const response = await axios.post<SignupRequest, AxiosResponse<SignupResponse>>(
-      `${BACKEND_URL}/admin/signup`,
-      request,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await axios.post<
+      SignupRequest,
+      AxiosResponse<SignupResponse>
+    >(`${BACKEND_URL}/admin/signup`, request, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function userSignup(request: SignupRequest) {
+  try {
+    const response = await axios.post<
+      SignupRequest,
+      AxiosResponse<SignupResponse>
+    >(`${BACKEND_URL}/user/signup`, request, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     return response.data;
   } catch (e) {
     throw e;

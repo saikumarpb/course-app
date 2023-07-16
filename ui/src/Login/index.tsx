@@ -2,10 +2,11 @@ import { Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
-import { adminLogin } from './service';
+import { userLogin } from './service';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atom';
 import { getUser } from '../Navbar/service';
+import { AxiosError } from 'axios';
 
 interface LoginProps {
   showLogin: boolean;
@@ -34,16 +35,9 @@ function Login({ showLogin, onClose }: LoginProps) {
 
   const handleSubmit = async (e: React.MouseEvent<unknown, unknown>) => {
     e.preventDefault();
+    const toastId = toast.loading('Loading ...', { position: 'bottom-right' });
     try {
-      const response = await toast.promise(
-        adminLogin(userDetails),
-        {
-          pending: 'Loading...',
-          success: 'Login successful',
-          error: 'Login failed',
-        },
-        { position: 'bottom-right' }
-      );
+      const response = await userLogin(userDetails);
 
       const me = await getUser(response.token);
 
@@ -58,10 +52,20 @@ function Login({ showLogin, onClose }: LoginProps) {
       });
       localStorage.setItem('token', response.token);
       setUserDetails(defaultUserDetails);
+      toast.update(toastId, {
+        render: 'Login Successful',
+        type: 'success',
+        isLoading: false,
+        autoClose: 1500,
+      });
       onClose();
-    } catch (e) {
-      console.log(e);
-      toast.error('Fetching user failed');
+    } catch (e: AxiosError<unknown, any>) {
+      toast.update(toastId, {
+        render: e.response.data.message,
+        type: 'error',
+        isLoading: false,
+        autoClose: 1500,
+      });
     }
   };
 
