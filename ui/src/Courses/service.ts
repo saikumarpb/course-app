@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import { Course, CourseResponse } from './types';
 
@@ -35,14 +35,11 @@ export async function deleteCourse(courseId: string, token: string) {
 
 export async function fetchCourseList() {
   try {
-    const response = await axios.get<CourseResponse>(
-      `${BACKEND_URL}/courses`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await axios.get<CourseResponse>(`${BACKEND_URL}/courses`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     return response.data.courses;
   } catch (e) {
@@ -65,5 +62,26 @@ export async function fetchAdminCourseList(token: string) {
     return response.data.courses;
   } catch (e) {
     throw e;
+  }
+}
+
+export async function buyCourse(token: string, courseId: string) {
+  try {
+    console.log('From purchase course', courseId, token);
+
+    const response = await axios.post<{ message: string }>(
+      `${BACKEND_URL}/users/courses/${courseId}`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (e) {
+    if (e instanceof AxiosError) throw new Error(e.response?.data?.message);
   }
 }
