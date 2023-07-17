@@ -1,5 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { useRecoilValue, useRecoilValueLoadable } from 'recoil';
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useResetRecoilState,
+} from 'recoil';
 import { filteredCourse } from '../recoil/courses/atom';
 import Loading from '../components/Loading';
 import { ShoppingCart } from '@mui/icons-material';
@@ -7,11 +11,13 @@ import { Button } from '@mui/material';
 import { authState } from '../recoil/auth/atom';
 import { buyCourse } from './service';
 import { toast } from 'react-toastify';
+import { purchasedCourses } from '../recoil/user/atom';
 
 export default function Course() {
   const { courseId } = useParams();
   const course = useRecoilValueLoadable(filteredCourse(courseId!));
   const auth = useRecoilValue(authState);
+  const resetPurchases = useResetRecoilState(purchasedCourses);
 
   const purchaseCourse = async (courseId: string) => {
     if (auth.isLoggedin && auth.token && auth.role === 'user') {
@@ -27,6 +33,8 @@ export default function Course() {
           type: 'success',
           render: response?.message,
         });
+        // TODO: Check if reset is working (try atom effects)
+        resetPurchases();
       } catch (e) {
         if (e instanceof Error)
           toast.update(toastId, {
