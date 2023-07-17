@@ -7,5 +7,9 @@ export interface Course {
 }
 
 export interface CourseResponse {
-    courses: (Course & {_id: string})[]
+  courses: (Course & { _id: string })[];
+}
+
+export interface PurchasedCourseResponse {
+  purchasedCourses: (Course & { _id: string })[];
 }

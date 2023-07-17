@@ -52,10 +52,11 @@ function Sidebar() {
               icon={<FileDownload className="mr-2" />}
               name={'Purchases'}
               onClick={() => {
-                featureNotImplemented();
+                navigate('/purchases');
               }}
             />
           )}
+
           <SidebarButton
             icon={<Settings className="mr-2" />}
             name={'Settings'}
@@ -63,6 +64,7 @@ function Sidebar() {
               featureNotImplemented();
             }}
           />
+
           <SidebarButton
             icon={<Logout className="mr-2" />}
             name={'Logout'}

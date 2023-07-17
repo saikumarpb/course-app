@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { BACKEND_URL } from '../utils/constants';
-import { Course, CourseResponse } from './types';
+import { Course, CourseResponse, PurchasedCourseResponse } from './types';
 
 export async function postCourse(course: Course, token: string) {
   await axios.post<Course>(`${BACKEND_URL}/admin/courses`, course, {
@@ -60,6 +60,24 @@ export async function fetchAdminCourseList(token: string) {
     );
 
     return response.data.courses;
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function fetchPurchasedCourses(token: string) {
+  try {
+    const response = await axios.get<PurchasedCourseResponse>(
+      `${BACKEND_URL}/users/purchasedCourses`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data.purchasedCourses;
   } catch (e) {
     throw e;
   }

@@ -3,6 +3,7 @@ import App from '../App';
 import Courses from '../Courses';
 import Home from '../Home';
 import Course from '../Courses/course';
+import PurchasedCourses from '../Courses/purchasedCourses';
 
 const routes: RouteObject[] = [
   {
@@ -20,6 +21,10 @@ const routes: RouteObject[] = [
       {
         path: 'courses/:courseId',
         element: <Course />,
+      },
+      {
+        path: 'purchases',
+        element: <PurchasedCourses />,
       },
     ],
   },
