@@ -162,11 +162,11 @@ app.post('/users/courses/:courseId', authMiddleware, async (req, res) => {
         try {
           await user.save();
         } catch (e) {
-          return res.send({ message: e.message });
+          return res.status(400).send({ message: e.message });
         }
-        res.send({ message: 'Course purchased successfully' });
+        return res.send({ message: 'Course purchased successfully' });
       } else {
-        res.status(403).send({ message: 'User not found' });
+        return res.status(403).send({ message: 'User not found' });
       }
     }
   } catch (e) {
