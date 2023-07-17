@@ -18,7 +18,7 @@ export default function PurchasedCourses() {
       return (
         <div className="w-full flex flex-col gap-4 p-4 items-center justify-center">
           {purchases.contents.length === 0 ? (
-            <div className="w-full bg-red-100 rounded font-semibold text-xl text-center text-yellow-200 p-3">
+            <div className="w-full rounded font-semibold text-xl text-center bg-yellow-50 p-3">
               No Purchases Found
             </div>
           ) : (
